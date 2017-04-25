@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='GMC',
-    version=1.0.0.dev1,
+    name='gmc',
+    version='1.0.0.dev1',
     url='https://github.com/kapilgarg1996/gmc',
     author='Kapil GC',
     author_email='kapilgarg1996@gmail.com',
@@ -10,9 +10,9 @@ setup(
                  'using neural networks'),
     license='MIT',
     packages=find_packages(exclude=['docs', 'bin', 'tests*']),
-    scripts=['/bin/gmc.py'],
+    scripts=['gmc/bin/gmc.py'],
     entry_points={'console_scripts': [
-        'gmc=gmc.core.handler:execute_from_command_line',
+        'gmc = gmc.core.handler:execute_from_command_line',
     ]},
     install_requires=['tensorflow', 'librosa'],
     extras_require={},
