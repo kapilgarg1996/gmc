@@ -10,6 +10,8 @@ Welcome to Genre Based Music Classifier's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   ref/index
+
 
 
 Indices and tables

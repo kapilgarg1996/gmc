@@ -1,0 +1,68 @@
+==================
+Settings Reference
+==================
+
+.. currentmodule:: gmc.conf
+
+This document covers the features of :class:`~gmc.conf.Settings` class.
+It also covers the options available for environment settings.
+
+.. _settings-overview:
+
+``Overview``
+============
+
+After installation of :mod:`gmc` module, a :mod:`settings` module is
+important to configure ``gmc``. The ``settings`` module path can be
+explicitly provided to ``gmc`` command. If not provided, then the
+current working directory will be assumed to have the ``settings``
+module.
+
+The :ref:`gmc command <gmc-command>` can work in any of the following
+ways:
+
+.. code-block:: console
+	$ gmc
+	$ gmc path/to/my/settings.py
+	$ gmc path.to.my.settings
+
+If the provided path is a directory path then gmc will try to convert
+slashes with ``.`` and will try to import the module. This means that
+all the directories relative to ``settings.py`` must be python modules.
+
+.. _settings-module
+
+``settings.py`` module
+======================
+
+To configure ``gmc``, it is important to create a ``settings.py`` module
+which is importable. You can create a ``settings.py`` file in the directory
+from where the ``gmc`` command is to be run for convinience.
+
+
+``Settings Options``
+====================
+
+Currently, there are only 2 available options for ``gmc``.
+
+.. _dataset-dir-option:
+
+``DATASET_DIR``
+
+This setting specifies the path where the dataset is stored. It is important
+that the dataset format is same as the one mentioned in dataset documentation.
+By default, it is set to ``/tmp``
+
+
+``BRAIN_DIR``
+
+This setting will specify the directory where ``GMC`` will store its results
+files, feature files and other important files. By default, it is set to ``/tmp``
+
+The following file format shows how to create your ``settings.py`` module
+
+.. snippet::
+	:filename: settings.py
+
+	DATASET_DIR = '/home/kapil/dataset'
+	BRAIN_DIR 	= '/home/kapil/results'
