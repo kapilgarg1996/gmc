@@ -5,18 +5,12 @@ from gmc.conf import global_settings
 ENVIRONMENT_VARIABLE = "GMC_SETTINGS_MODULE"
 class Settings:
 	def __init__(self, *args, **kwargs):
-		pass
+		self.settings = None
 
 	def __getattr__(self, name):
 		if self.settings is None:
 			self.load_settings()
 		return self.settings[name]
-
-	def __setattr__(self, name, value):
-		if self.settings is None:
-			self.load_settings()
-
-		self.settings[name] = value
 
 	def load_settings(self):
 		self.settings = {}
