@@ -4,10 +4,17 @@ from gmc.conf import global_settings
 
 ENVIRONMENT_VARIABLE = "GMC_SETTINGS_MODULE"
 class Settings:
+	"""
+	Module to load settings to configure gmc
+	"""
 	def __init__(self, *args, **kwargs):
 		self.settings = None
 
 	def __getattr__(self, name):
+		"""
+		Make settings  available as the attributes.
+		Like settings.DATASET_DIR
+		"""
 		if self.settings is None:
 			self.load_settings()
 		return self.settings[name]
