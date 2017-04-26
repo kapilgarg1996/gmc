@@ -10,9 +10,9 @@ setup(
                  'using neural networks'),
     license='MIT',
     packages=find_packages(exclude=['docs', 'bin', 'tests*']),
-    scripts=['gmc/bin/gmc.py'],
+    scripts=['gmc/bin/gmc-main.py'],
     entry_points={'console_scripts': [
-        'gmc = gmc.core.handler:execute_from_command_line',
+        'gmc-main = gmc.core.handler:execute_from_command_line',
     ]},
     install_requires=['tensorflow', 'librosa'],
     extras_require={},
