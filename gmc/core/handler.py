@@ -17,19 +17,16 @@ def execute_from_command_line(argv=None):
 	if(len(argv) != 2):
 		print('Incorrect Usage of gmc-main command')
 		return
-	try:
-		mod = importlib.import_module(argv[1])
-		os.environ.setdefault(ENVIRONMENT_VARIABLE, argv[1])
-	except ImportError:
-		if os.path.exists(argv[1]):
-			module_file = os.path.basename(argv[1])
-			module_path = os.path.abspath(argv[1])
-			module_dir = os.path.dirname(module_path)
-			sys.path.append(module_dir)
-			module_name = module_file.split('.py')[0]
-			os.environ.setdefault(ENVIRONMENT_VARIABLE, module_name)
-		else:
-			print('Incorrect format for settings.py path')
+
+	if os.path.exists(argv[1]):
+		module_file = os.path.basename(argv[1])
+		module_path = os.path.abspath(argv[1])
+		module_dir = os.path.dirname(module_path)
+		sys.path.append(module_dir)
+		module_name = module_file.split('.py')[0]
+		os.environ.setdefault(ENVIRONMENT_VARIABLE, module_name)
+	else:
+		print('Incorrect format for settings.py path')
 	
 	try:
 		print("Dataset Directory set to '%s'" % settings.DATASET_DIR)
