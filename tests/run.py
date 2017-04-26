@@ -1,11 +1,12 @@
 import unittest
 import os
 import importlib
+import sys
 
-def build_suite():
+def build_suite(test_labels=None):
 	suite = unittest.TestSuite()
 	test_loader = unittest.defaultTestLoader
-	test_labels = ['.']
+	test_labels = test_labels or ['.']
 	discover_kwargs = {}
 	for label in test_labels:
 		kwargs = discover_kwargs.copy()
@@ -14,7 +15,7 @@ def build_suite():
 		label_as_path = os.path.abspath(label)
 		# if a module, or "module.ClassName[.method_name]", just run those
 		if not os.path.exists(label_as_path):
-			tests = self.test_loader.loadTestsFromName(label)
+			tests = test_loader.loadTestsFromName(label)
 		elif os.path.isdir(label_as_path):
 			top_level = label_as_path
 			while True:
@@ -56,6 +57,6 @@ def is_discoverable(label):
 	return os.path.isdir(os.path.abspath(label))
 
 if __name__ == '__main__':
-	suite = build_suite()
+	suite = build_suite(sys.argv[1:])
 	runner = unittest.TextTestRunner()
 	runner.run(suite)
