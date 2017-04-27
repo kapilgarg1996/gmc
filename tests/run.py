@@ -3,6 +3,8 @@ import os
 import importlib
 import sys
 
+from gmc.conf import ENVIRONMENT_VARIABLE
+
 def build_suite(test_labels=None):
 	suite = unittest.TestSuite()
 	test_loader = unittest.defaultTestLoader
@@ -57,6 +59,7 @@ def is_discoverable(label):
 	return os.path.isdir(os.path.abspath(label))
 
 if __name__ == '__main__':
+	os.environ[ENVIRONMENT_VARIABLE] = 'setting'
 	suite = build_suite(sys.argv[1:])
 	runner = unittest.TextTestRunner()
 	runner.run(suite)
