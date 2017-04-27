@@ -2,11 +2,8 @@ import unittest
 import os
 import tempfile
 import shutil
-
-GENRE_DIRS = [
-	'blues', 'classical', 'country', 'disco', 'hiphop',
-	'jazz', 'metal', 'pop', 'reggae', 'rock'
-]
+import importlib
+from gmc.conf import settings, ENVIRONMENT_VARIABLE
 
 class TestCase(unittest.TestCase):
 
@@ -31,7 +28,7 @@ class TestCase(unittest.TestCase):
 			os.makedirs(cls.brain_dir)
 
 		#create music directories and files
-		for gen_dir in GENRE_DIRS:
+		for gen_dir in settings.GENRES:
 			dir_path = os.path.join(cls.dataset_dir, gen_dir)
 			if not os.path.exists(dir_path):
 				os.makedirs(dir_path)
