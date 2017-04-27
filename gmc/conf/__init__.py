@@ -9,13 +9,15 @@ class Settings:
 	"""
 	def __init__(self, *args, **kwargs):
 		self.settings = None
+		self.settings_module = None
 
 	def __getattr__(self, name):
 		"""
 		Make settings  available as the attributes.
 		Like settings.DATASET_DIR
 		"""
-		if self.settings is None:
+		settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
+		if self.settings is None or settings_module != self.settings_module:
 			self.load_settings()
 		return self.settings[name]
 
@@ -24,8 +26,8 @@ class Settings:
 		for setting in dir(global_settings):
 			if setting.isupper():
 				self.settings[setting] = getattr(global_settings, setting)
-		settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
-		mod = importlib.import_module(settings_module)
+		self.settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
+		mod = importlib.import_module(self.settings_module)
 
 		for setting in dir(mod):
 			if setting.isupper():
