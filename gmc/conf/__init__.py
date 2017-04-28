@@ -21,8 +21,7 @@ class Settings:
 
 	def __iter__(self):
 		self.load_settings()
-		for item in self.settings:
-			yield item, self.settings[item]
+		return iter(self.settings)
 
 	def load_settings(self):
 		settings_module = os.environ.get(ENVIRONMENT_VARIABLE)

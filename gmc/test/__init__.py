@@ -1,8 +1,11 @@
 import unittest
 import os
+import sys
 import tempfile
 import shutil
 import importlib
+import traceback
+from contextlib import contextmanager
 from gmc.conf import settings, ENVIRONMENT_VARIABLE
 
 class TestCase(unittest.TestCase):
@@ -12,8 +15,8 @@ class TestCase(unittest.TestCase):
 		super(TestCase, cls).setUpClass()
 		cls._old_settings = {}
 
-		for setting, value in settings:
-			cls._old_settings[setting] = value
+		for setting in settings:
+			cls._old_settings[setting] = getattr(settings, setting)
 
 		cls.dataset_dir = os.path.realpath(os.path.join(
 			tempfile.gettempdir(),
@@ -65,3 +68,32 @@ class TestCase(unittest.TestCase):
 
 		settings.modify(cls._old_settings)
 		super(TestCase, cls).tearDownClass()
+
+	# @contextmanager
+	# def subTest(self, **kwargs):
+	# 	#Ugly way to provide functionality for unittest.TestCase subTest()
+	# 	for item in kwargs:
+	# 		setattr(self, item, kwargs[item])
+
+	# 	try:
+	# 		yield
+	# 	except Exception:
+	# 		exctype, value, tb = sys.exc_info()
+	# 		while tb and self._is_relevant_tb_level(tb):
+	# 			tb = tb.tb_next
+
+	# 		print(self.id() + '\n'+ 
+	# 				''.join(traceback.format_exception(exctype, value, tb)))
+
+	# 	for item in kwargs:
+	# 		delattr(self, item)
+
+	# def _is_relevant_tb_level(self, tb):
+	# 	return '__unittest' in tb.tb_frame.f_globals
+
+	# def _count_relevant_tb_levels(self, tb):
+	# 	length = 0
+	# 	while tb and not self._is_relevant_tb_level(tb):
+	# 		length += 1
+	# 		tb = tb.tb_next
+	# 	return length
