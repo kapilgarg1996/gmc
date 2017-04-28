@@ -1,9 +1,11 @@
+import argparse
 import unittest
 import os
 import importlib
 import sys
 
-from gmc.conf import ENVIRONMENT_VARIABLE
+from gmc.conf import settings, ENVIRONMENT_VARIABLE
+from gmc.core import handler
 
 def build_suite(test_labels=None):
 	suite = unittest.TestSuite()
@@ -59,7 +61,23 @@ def is_discoverable(label):
 	return os.path.isdir(os.path.abspath(label))
 
 if __name__ == '__main__':
-	os.environ[ENVIRONMENT_VARIABLE] = 'setting'
-	suite = build_suite(sys.argv[1:])
+	parser = argparse.ArgumentParser()
+	parser.add_argument(
+        'modules', nargs='*',
+        help='Optional path(s) to test modules; e.g. "test_settings" or '
+             '"test_settings.tests.TestSettings.test_settings_loader".',
+    )
+	parser.add_argument('--settings', help='Test gmc with different settings file')
+	args = parser.parse_args()
+
+	if args.settings:
+		handler.execute_from_command_line(['', args.settings], quiet=True)
+		os.environ['DUMMY'] = "FALSE"
+	else:
+		os.environ[ENVIRONMENT_VARIABLE] = 'setting'
+		os.environ['DUMMY'] = "TRUE"
+
+	args.modules = [os.path.normpath(labels) for labels in args.modules]
+	suite = build_suite(args.modules)
 	runner = unittest.TextTestRunner()
 	runner.run(suite)
