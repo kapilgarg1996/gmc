@@ -16,12 +16,19 @@ class Settings:
 		Make settings  available as the attributes.
 		Like settings.DATASET_DIR
 		"""
-		settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
-		if self.settings is None or settings_module != self.settings_module:
-			self.load_settings()
+		self.load_settings()
 		return self.settings[name]
 
+	def __iter__(self):
+		self.load_settings()
+		for item in self.settings:
+			yield item, self.settings[item]
+
 	def load_settings(self):
+		settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
+		if self.settings is not None and settings_module == self.settings_module:
+			return
+
 		self.settings = {}
 		for setting in dir(global_settings):
 			if setting.isupper():
@@ -32,5 +39,10 @@ class Settings:
 		for setting in dir(mod):
 			if setting.isupper():
 				self.settings[setting] = getattr(mod, setting)
+
+	def modify(self, new_settings):
+		for name in new_settings:
+			if name in self.settings:
+				self.settings[name] = new_settings[name]
 
 settings = Settings()
