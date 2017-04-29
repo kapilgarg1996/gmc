@@ -2,10 +2,13 @@
 Settings Reference
 ==================
 
+.. module:: gmc.conf
 .. currentmodule:: gmc.conf
 
 This document covers the features of :class:`~gmc.conf.Settings` class.
-It also covers the options available for environment settings.
+It also covers the options available for environment settings. ``settings``
+can be used by other modules by directing importing them from :mod:`gmc.conf`
+module.
 
 .. _settings-overview:
 
@@ -14,23 +17,18 @@ It also covers the options available for environment settings.
 
 After installation of :mod:`gmc` module, a :mod:`settings` module is
 important to configure ``gmc``. The ``settings`` module path can be
-explicitly provided to ``gmc`` command. If not provided, then the
+explicitly provided to ``gmc-main`` command. If not provided, then the
 current working directory will be assumed to have the ``settings``
 module.
 
-The :ref:`gmc command <gmc-command>` can work in any of the following
-ways:
+The ``gmc-main`` command can work in he following way:
 
 .. code-block:: console
-	$ gmc
-	$ gmc path/to/my/settings.py
-	$ gmc path.to.my.settings
 
-If the provided path is a directory path then gmc will try to convert
-slashes with ``.`` and will try to import the module. This means that
-all the directories relative to ``settings.py`` must be python modules.
+	$ gmc-main
+	$ gmc-main path/to/my/settings.py
 
-.. _settings-module
+.. _settings-module:
 
 ``settings.py`` module
 ======================
@@ -40,12 +38,12 @@ which is importable. You can create a ``settings.py`` file in the directory
 from where the ``gmc`` command is to be run for convinience.
 
 
-``Settings Options``
+.. _settings-options
+
+``Settings`` Options
 ====================
 
-Currently, there are only 2 available options for ``gmc``.
-
-.. _dataset-dir-option:
+Currently, there are only 3 available options for ``gmc``.
 
 ``DATASET_DIR``
 
@@ -59,10 +57,49 @@ By default, it is set to ``/tmp``
 This setting will specify the directory where ``GMC`` will store its results
 files, feature files and other important files. By default, it is set to ``/tmp``
 
+``GENRES``
+
+This setting specifies the list of genres to consider the dataset. The dataset
+directory must contain folders with names same to that of ``GENRES``. The
+default genres are 'blues', 'classical', 'country', 'disco', 'hiphop',
+'jazz', 'metal', 'pop', 'reggae', 'rock'
+
 The following file format shows how to create your ``settings.py`` module
 
-.. snippet::
-	:filename: settings.py
+.. code-block:: python
+	:caption: settings.py
 
 	DATASET_DIR = '/home/kapil/dataset'
-	BRAIN_DIR 	= '/home/kapil/results'
+	BRAIN_DIR = '/home/kapil/results'
+	GENRES = ['metal', 'pop']
+
+
+``Settings`` Class
+===================
+
+Here is the internal structure of `Settings` class.
+
+.. class:: Settings()
+	
+	The ``Settings`` class 2 attributes which are not meant to be used publically.
+	But a reference to them is made here.
+
+	.. attribute:: settings
+
+		Dictionary of settings specified in :ref:`settings.py <settings-module>`
+
+	.. attribute:: settings_module
+
+		Name of :ref:`settings-module`  module used to import current settings.
+
+	.. method:: load_settings()
+
+		Loads the settings from module specified in ``GMC_SETTINGS_MODULE`` environment
+		variable. This environment variable is automatically set when ``gmc-main`` 
+		command is invoked. If set explicitly, then the module must be
+		importable.
+
+	.. method:: modify(new_settings)
+
+		``new_settings`` is the dictionary mapping of settings to be set. This method
+		overrides the current settings with ``new_settings``

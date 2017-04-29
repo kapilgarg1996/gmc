@@ -1,0 +1,30 @@
+========================
+TestCase Class Reference
+========================
+
+.. currentmodule:: gmc.test
+
+This document covers the :class:`~gmc.test.TestCase` which is
+used to setup dummy dataset and :ref:`settings.py <settings-module>`
+module for tests.
+
+.. class:: TestCase()
+	
+	This class inherits ``unittest.TestCase`` and overrides its ``setUpClass()``
+	and ``tearDownClass()`` methods to create dummy files and directories for testing.
+
+	It also modifies the ``settings`` for the test cases and restores old settings
+	after completion of tests.
+
+	.. attribute:: dataset_dir
+
+		Set to the absolute path of dummy dataset directory. The dataset directory
+		contains 10 genre folders having 5 files each.
+
+	.. attribute:: brain_dir
+
+		Set to the absolute path of dummy results directory.
+
+	.. attribute:: settings_file
+
+		Set to the absolute path of dummy :ref:`settings-module`

@@ -1,0 +1,21 @@
+========================
+Command Executing Module
+========================
+
+.. currentmodule:: gmc.core.handler
+
+This document covers the module responsible to handle ``gmc-main`` command.
+``gmc-main`` command internally calls :func:`execute_from_command_line`
+to set the :ref:`settings-module`.
+
+.. function:: execute_from_command_line(args=None, quiet=False)
+	
+	``args`` can be specifically supplied to set :ref:`settings module 
+	<settings-module>` dynamically with in another method. If ``args``
+	not supplied then ``sys.args`` will be considered. It assumes that
+	``args[0]`` holds the command name and ``args[1]`` holds the
+	``settings`` module path.
+
+	``quiet`` is to prevent any messages from being output to standard
+	output. if ``True`` then messages will not be printed. Useful for
+	testing.

@@ -1,8 +1,8 @@
 =============
-`core` module
+`test` module
 =============
 
 .. toctree::
 	:maxdepth: 1
 
-	handler
+	test

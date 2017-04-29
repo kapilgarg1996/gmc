@@ -1,8 +1,8 @@
 =============
-`core` module
+`dataset` module
 =============
 
 .. toctree::
 	:maxdepth: 1
 
-	handler
+	musicset

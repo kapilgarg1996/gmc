@@ -6,3 +6,6 @@ API Reference
 	:maxdepth: 2
 
 	conf/index
+	core/index
+	test/index
+	dataset/index

@@ -1,0 +1,43 @@
+==================
+MusicSet Class API
+==================
+
+.. currentmodule:: gmc.dataset.musicset
+
+This document covers the API for :class:`MusicSet` class.
+
+.. class:: MusicSet(force_load=False, genres=None)
+	
+	This class holds the files information of the dataset and it
+	prepares a mapping of filename to their genres for correct
+	labels used in ML algorithms.
+
+	``force_load`` specifies whether the files data and label mapping
+	should be reloaded if a cached mapping exists previously.
+
+	``genres`` is a list provided to load a specific set of genres
+	instead of all genres specified in :ref:`settings.py <settings-module>`
+
+	.. attribute:: dataset_dir
+
+		Set to ``settings.DATASET_DIR``
+
+	.. attribute:: results_dir
+
+		Set to ``settings.BRAIN_DIR``
+
+	.. attribute:: files
+
+		A dictionary containing mappings between genres and absolute file
+		paths. eg. files['pop'] is a list of all file paths present in 'pop'
+		folder in dataset directory.
+
+	.. method:: load_files()
+
+		It loads all the files and stores them in :attr:`files`. It skips
+		the non-existent genre folder.
+
+	.. note::
+
+		Currently, ``gmc`` only supports **wav** file formats and thus 
+		:meth:`load_files` only loads **wav** files.
