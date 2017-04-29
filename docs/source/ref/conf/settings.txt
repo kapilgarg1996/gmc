@@ -38,7 +38,7 @@ which is importable. You can create a ``settings.py`` file in the directory
 from where the ``gmc`` command is to be run for convinience.
 
 
-.. _settings-options
+.. _settings-options:
 
 ``Settings`` Options
 ====================
