@@ -4,6 +4,7 @@ genres
 """ 
 import os
 from gmc.conf import settings
+import numpy as np
 
 class MusicSet:
     def __init__(self, force_load=False, genres=None):
@@ -12,6 +13,9 @@ class MusicSet:
         self.force_load = force_load
         self.genres = genres or settings.GENRES
         self.files = {}
+        self.data = None
+        self.labels = None
+        self.encoded_genres = {}
 
     def load_files(self):
         for genre in self.genres:
@@ -22,3 +26,11 @@ class MusicSet:
                     file_path = os.path.join(genre_path, f)
                     if os.path.isfile(file_path) and f.endswith(".wav"):
                         self.files[genre].append(file_path)
+
+    def one_hot_encode_genres(self):
+        total_genres = len(self.genres)
+        genre_class=0
+        for genre in self.genres:
+            encoded = self.encoded_genres[genre] = np.zeros(total_genres)
+            encoded[genre_class] = 1
+            genre_class += 1

@@ -24,4 +24,4 @@ class TestReadFiles(unittest.TestCase):
         self.fileset.load_files()
 
     def test_genres_count(self):
-        self.assertEqual(len(self.fileset.files), 10)
+        self.assertEqual(len(self.fileset.files), len(settings.GENRES))
