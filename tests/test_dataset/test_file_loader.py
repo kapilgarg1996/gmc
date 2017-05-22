@@ -32,3 +32,6 @@ class TestReadFiles(unittest.TestCase):
 
     def test_genres_count(self):
         self.assertEqual(len(self.fileset.files), len(settings.GENRES))
+
+    def tearDown(self):
+        self.fileset.destroy_results()
