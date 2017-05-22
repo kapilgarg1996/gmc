@@ -6,8 +6,10 @@ import os
 import pickle
 import shutil
 import numpy as np
+import importlib
 from gmc.conf import settings
 from gmc.core.cache import store
+from gmc.dataset import features
 
 RESULT_DIR = 'musicset'
 
@@ -24,7 +26,7 @@ class MusicSet:
         self.test = None
         self.encoded_genres = {}
 
-    @store(os.path.join(results_dir, 'loaded_files.dat'), 'files', force=force_load)
+    @store(os.path.join(results_dir, 'loaded_files.dat'), prop='files', force=force_load)
     def load_files(self):
         for genre in self.genres:
             genre_path = os.path.join(settings.DATASET_DIR, genre)
@@ -44,6 +46,61 @@ class MusicSet:
             encoded = self.encoded_genres[genre] = np.zeros(total_genres)
             encoded[genre_class] = 1
             genre_class += 1
+
+    @store(os.path.join(results_dir, 'train.dat'), prop='train', force=force_load)
+    def load_train_data(self):
+        if self.train is None:
+            self.train = {
+                music : None,
+                labels : None
+            }
+        tr_ratio = int(settings.TRAIN_TEST_RATIO[0])/np.sum(settings.TRAIN_TEST_RATIO)
+        for genre in self.genres:
+            num_total_files = len(self.files[genre])
+            num_train_files = int(num_total_files*tr_ratio)
+            train_files = self.files[genre][:num_train_files]
+            for file in train_files:
+                result = None
+                for f in settings.FEATURES:
+                    feat_func = getattr(features, f)
+                    if result is None:
+                        result = feat_func(file)
+                    else:
+                        result = np.append(result, feat_func(file))
+                if self.train.music is None:
+                    self.train.music = result
+                    self.train.labels = np.array(self.encoded_genres[genre])
+                else:
+                    self.train.music = np.vstack((self.train.music, result,))
+                    self.train.labels = np.vstack((self.train.labels, self.encoded_genres[genre]))
+
+
+    @store(os.path.join(results_dir, 'test.dat'), prop='test', force=force_load)
+    def load_test_data(self):
+        if self.test is None:
+            self.test = {
+                music : None,
+                labels : None
+            }
+        tr_ratio = int(settings.TRAIN_TEST_RATIO[0])/np.sum(settings.TRAIN_TEST_RATIO)
+        for genre in self.genres:
+            num_total_files = len(self.files[genre])
+            num_train_files = int(num_total_files*tr_ratio)
+            test_files = self.files[genre][num_train_files:]
+            for file in test_files:
+                result = None
+                for f in settings.FEATURES:
+                    feat_func = getattr(features, f)
+                    if result is None:
+                        result = feat_func(file)
+                    else:
+                        result = np.append(result, feat_func(file))
+                if self.test.music is None:
+                    self.test.music = result
+                    self.test.labels = np.array(self.encoded_genres[genre])
+                else:
+                    self.test.music = np.vstack((self.test.music, result,))
+                    self.test.labels = np.vstack((self.test.labels, self.encoded_genres[genre]))
 
     def destroy_results(self):
         shutil.rmtree(self.results_dir)
