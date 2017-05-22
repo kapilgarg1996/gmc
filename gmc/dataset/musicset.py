@@ -13,6 +13,10 @@ from gmc.dataset import features
 
 RESULT_DIR = 'musicset'
 
+class DataSet:
+    music = None
+    labels = None
+
 class MusicSet:
     results_dir = os.path.join(settings.BRAIN_DIR, RESULT_DIR)
     force_load = False
@@ -24,7 +28,7 @@ class MusicSet:
         self.files = {}
         self.train = None
         self.test = None
-        self.encoded_genres = {}
+        self.encoded_genres = None
 
     @store(os.path.join(results_dir, 'loaded_files.dat'), prop='files', force=force_load)
     def load_files(self):
@@ -40,6 +44,7 @@ class MusicSet:
                 print('No Directory found for genre: '+genre)
 
     def one_hot_encode_genres(self):
+        self.encoded_genres = {}
         total_genres = len(self.genres)
         genre_class=0
         for genre in self.genres:
@@ -50,10 +55,9 @@ class MusicSet:
     @store(os.path.join(results_dir, 'train.dat'), prop='train', force=force_load)
     def load_train_data(self):
         if self.train is None:
-            self.train = {
-                music : None,
-                labels : None
-            }
+            self.train = DataSet()
+        if self.encoded_genres is None:
+            self.one_hot_encode_genres()
         tr_ratio = int(settings.TRAIN_TEST_RATIO[0])/np.sum(settings.TRAIN_TEST_RATIO)
         for genre in self.genres:
             num_total_files = len(self.files[genre])
@@ -78,10 +82,9 @@ class MusicSet:
     @store(os.path.join(results_dir, 'test.dat'), prop='test', force=force_load)
     def load_test_data(self):
         if self.test is None:
-            self.test = {
-                music : None,
-                labels : None
-            }
+            self.test = DataSet()
+        if self.encoded_genres is None:
+            self.one_hot_encode_genres()
         tr_ratio = int(settings.TRAIN_TEST_RATIO[0])/np.sum(settings.TRAIN_TEST_RATIO)
         for genre in self.genres:
             num_total_files = len(self.files[genre])
