@@ -5,30 +5,39 @@ Genre Based Music Classifier
 
 Follow the below commands to install gmc on your system
 ```bash
-$ `git clone https://github.com/kapilgarg1996/gmc.git`
-$ `sudo pip install gmc`
+$ git clone https://github.com/kapilgarg1996/gmc.git
+$ sudo pip install gmc
 ```
 ## Environment Setup for Development
+
+### Project Installation
 
 * install `pip` (Google how to install pip on your system)
 * install `virtualenv` (Google how to install virtualenv)
 * Now follow the below commands
   ``` bash
-  $ `virtualenv env`
-  $ `cd env`
-  $ `source bin/activate`
-  $ `git clone https://github.com/kapilgarg1996/gmc.git`
-  $ `cd gmc`
-  $ `pip install -e .`
+  $ virtualenv env
+  $ cd env
+  $ source bin/activate
+  $ git clone https://github.com/kapilgarg1996/gmc.git
+  $ cd gmc
+  $ pip install -e .
   ```
+
+### Dataset download
+
+* You can download the dataset from [Here](http://marsyasweb.appspot.com/download/data_sets/)
+* Music files are present in *au* format so you need to convert them to *wav* format.
+  You can use ffmpeg to convert files (Google out how to install ffmpeg on your system) 
+
 ## Run Tests
 
 GMC has its own test running module. Follow the below test
 to run the test suite.
 
 ```bash
-$ `cd tests`
-$ `python run.py`
+$ cd tests
+$ python run.py
 ```
 
 ## Writing Tests
@@ -57,6 +66,11 @@ GMC uses sphinx for its documentation. The documentation is present
 inside `docs/` folder and is in plain text format. Go to the `docs/`
 folder where You can build the documentation using the following
 command
+
+## Writing Documentation
+
+Please write documentation for every piece of code you add or modify. Use markdown format and sphinx features.
+(Its not that hard)
 
 ```bash
 make html
