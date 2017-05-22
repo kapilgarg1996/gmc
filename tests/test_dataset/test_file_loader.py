@@ -2,7 +2,7 @@ import unittest
 import os
 from gmc.conf import settings
 from gmc.test import TestCase
-from gmc.dataset import musicset
+from gmc.dataset import musicset, features
 
 class TestDummyFiles(TestCase):
     @classmethod
@@ -25,7 +25,7 @@ class TestDummyFiles(TestCase):
 
 @unittest.skipIf(os.environ.get("DUMMY") == "TRUE",
     "not necessary when real dataset not supplied")
-class TestReadFiles(unittest.TestCase):
+class TestRealFiles(unittest.TestCase):
     def setUp(self):
         self.fileset = musicset.MusicSet()
         self.fileset.load_files()
