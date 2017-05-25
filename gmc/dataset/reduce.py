@@ -10,10 +10,10 @@ def pca(x):
     S_ = np.divide(S_cum, S_cum[-1])
     k=1
     for s in S_:
-        if s > 0.95:
+        if s > 0.99:
             break
         k += 1
     U_ = U[:, :k]
     Z = np.matmul(U_.T,x.T)
 
-    return Z
+    return Z.T
