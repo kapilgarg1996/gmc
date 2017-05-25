@@ -9,57 +9,56 @@ class TestStore(unittest.TestCase):
 		cls._dummy_paths = {}
 		cls.next_path = 0
 		class Dummy:
-			@store(cls.dummy_path(0), 'name')
-			def get_name(self, name=None):
-				return name or 'dummy'
+			def __init__(self, force=False):
+				self.storage = store('/tmp', force)
+			def get_name(self, name='dummy'):
+				n = self.storage[cls.dummy_path(0)]
+				if n is not None:
+					return n
+				self.storage[cls.dummy_path(0)] = name
+				return name
 
-			@store(cls.dummy_path(1), 'name')
-			def set_name(self, name=None):
-				self.name = name or 'dummy'
+			def set_name(self, name='dummy'):
+				n = self.storage[cls.dummy_path(0)]
+				if n is not None:
+					self.name = n
+					return n
+				self.name = name
+				self.storage[cls.dummy_path(0)] = name
+				return name
+
+			def destory(self):
+				os.remove(cls.dummy_path(0))
 
 		cls.Dummy = Dummy
 
-	def test_with_prop_with_return(self):
+	def test_getter(self):
 		dum = self.Dummy()
 		name = dum.get_name('custom_name')
-		self.assertEqual(dum.name, 'custom_name')
 		self.assertEqual(name, 'custom_name')
+		name = dum.get_name('another_name')
 
-		name = dum.get_name('different_name')
-		# The following assertions show that 'name' is loaded from stored file
-		# and function call is bypassed 
-		self.assertEqual(dum.name, 'custom_name')
-		self.assertNotEqual(name, 'custom_name')
+		#this shows that old saved copy is used
+		self.assertEqual(name, 'custom_name')
+		dum.destory()
 
-	def test_with_prop_without_return(self):
+	def test_setter(self):
 		dum = self.Dummy()
-		dum.set_name()
-		self.assertEqual(dum.name, 'dummy')
+		dum.set_name('custom_name')
+		self.assertEqual(dum.name, 'custom_name')
 		dum.set_name('different_name')
-		self.assertEqual(dum.name, 'dummy')
-
-	def test_without_prop_with_return(self):
-		@store(self.dummy_path(2))
-		def dummy_func(name=None):
-			return name or 'dummy'
-
-		result = dummy_func()
-		self.assertEqual(result, 'dummy')
-
-		next_result = dummy_func('different_name')
-		self.assertEqual(result, 'dummy')
+		self.assertEqual(dum.name, 'custom_name')
+		dum.destory()
 
 	def test_force_reloading(self):
-		@store(self.dummy_path(2), force=True)
-		def dummy_func(name=None):
-			return name or 'dummy'
+		dum = self.Dummy(force=True)
+		name = dum.get_name('custom_name')
+		self.assertEqual(name, 'custom_name')
+		name = dum.get_name('another_name')
 
-		result = dummy_func('not_dummy')
-		self.assertEqual(result, 'not_dummy')
-
-		#remove dummy path file for other tests which don't use
-		#force reloading
-		os.remove(self.dummy_path(2))
+		#this shows that new copy is made
+		self.assertEqual(name, 'another_name')
+		dum.destory()
 
 	@classmethod
 	def dummy_path(cls, name):
