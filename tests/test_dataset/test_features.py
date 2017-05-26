@@ -4,6 +4,12 @@ from gmc.conf import settings
 from gmc.test import TestCase
 from gmc.dataset import musicset, features
 
+NUM_FEATURES = {
+    'mfcc' : 160,
+    'dwt' : 112,
+    'beat' : 13
+}
+
 class TestTempFiles(unittest.TestCase):
     def test_feature_computation(self):
         module_path = os.path.dirname(os.path.abspath(__file__))
@@ -20,19 +26,22 @@ class TestTempFiles(unittest.TestCase):
 class TestRealFeatures(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.fileset = musicset.MusicSet(dirname='features2')
+        cls.fileset = musicset.MusicSet(dirname='features3')
         cls.fileset.load_files()
+        cls.total_features = 0
+        for f in settings.FEATURES:
+            cls.total_features += NUM_FEATURES[f]
 
     def test_train_data_loading(self):
         train = self.fileset.load_train_data()
         self.assertEqual(train.music.shape[0], 700)
-        self.assertEqual(train.music.shape[1], 283)
+        self.assertEqual(train.music.shape[1], self.total_features)
         self.assertEqual(train.labels.shape[0], 700)
         self.assertEqual(train.labels.shape[1], 10)
 
     def test_test_data_loading(self):
         test = self.fileset.load_test_data()
         self.assertEqual(test.music.shape[0], 300)
-        self.assertEqual(test.music.shape[1], 283)
+        self.assertEqual(test.music.shape[1], self.total_features)
         self.assertEqual(test.labels.shape[0], 300)
         self.assertEqual(test.labels.shape[1], 10)

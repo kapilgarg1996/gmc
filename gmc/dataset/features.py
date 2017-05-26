@@ -5,6 +5,7 @@ import librosa
 import numpy as np
 import pywt
 import tensorflow as tf
+from gmc.conf import settings
 
 def mfcc(filename, **kwargs):
     """
@@ -17,10 +18,10 @@ def mfcc(filename, **kwargs):
     Returns complete feature vector (160 features)
     """
     y, sr = librosa.load(filename)
-    kwargs.setdefault('n_fft', int(sr*0.025))
-    kwargs.setdefault('hop_length', int(sr*0.005))
+    kwargs.setdefault('n_fft', int(sr*settings.FRAME_LENGTH))
+    kwargs.setdefault('hop_length', int(sr*settings.HOP_LENGTH))
     kwargs.setdefault('n_mels', 128)
-    kwargs.setdefault('n_mfcc', 13)
+    kwargs.setdefault('n_mfcc', settings.N_MFCC)
     mfcc = librosa.feature.mfcc(y=y, sr=sr, **kwargs)
     deltas = librosa.feature.delta(mfcc)
     d_deltas = librosa.feature.delta(mfcc, order=2)
@@ -48,8 +49,8 @@ def dwt(filename, **kwargs):
     """
     y, sr = librosa.load(filename)
     options = {}
-    options['frame_length'] = int(sr*0.25)
-    options['hop_length'] = int(sr*0.05)
+    options['frame_length'] = int(sr*settings.FRAME_LENGTH*settings.W_FRAME_SCALE)
+    options['hop_length'] = int(sr*settings.HOP_LENGTH*settings.W_FRAME_SCALE)
     frames = librosa.util.frame(y, **options)
     frames = frames.T
     wavelets = None
