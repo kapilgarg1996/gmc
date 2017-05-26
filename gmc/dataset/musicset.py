@@ -15,8 +15,16 @@ from gmc.dataset import features, reduce
 RESULT_DIR = 'musicset'
 
 class DataSet:
-    music = None
-    labels = None
+    def __init__(self):
+        self.music = None
+        self.labels = None
+
+    def next_batch(self, n):
+        if self.music is None:
+            return None, None
+
+        idx = np.random.randint(self.music.shape[0], size=n)
+        return self.music[idx, :], self.labels[idx, :]
 
 class MusicSet:
     def __init__(self, force_load=False, genres=None, dirname=RESULT_DIR):
