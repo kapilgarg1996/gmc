@@ -14,3 +14,13 @@ class TestPCA(unittest.TestCase):
         storage = store(featureset.results_dir)
         storage['reduced_mdb.dat'] = new_features
         self.assertGreater(train.music.shape[1], new_features.shape[1])
+
+    def test_lda(self):
+        featureset = musicset.MusicSet(dirname='features2')
+        train = featureset.load_train_data()
+        new_features = reduce.lda(train.music, train.labels)
+        print(new_features.shape)
+
+    def test_visual_data(self):
+        featureset = musicset.MusicSet(dirname='features2')
+        featureset.visualize()

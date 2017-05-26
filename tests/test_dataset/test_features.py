@@ -4,12 +4,6 @@ from gmc.conf import settings
 from gmc.test import TestCase
 from gmc.dataset import musicset, features
 
-NUM_FEATURES = {
-    'mfcc' : 160,
-    'dwt' : 112,
-    'beat' : 13
-}
-
 class TestTempFiles(unittest.TestCase):
     def test_feature_computation(self):
         module_path = os.path.dirname(os.path.abspath(__file__))
@@ -30,7 +24,7 @@ class TestRealFeatures(unittest.TestCase):
         cls.fileset.load_files()
         cls.total_features = 0
         for f in settings.FEATURES:
-            cls.total_features += NUM_FEATURES[f]
+            cls.total_features += settings.FEATURES_LENGTH[f]
 
     def test_train_data_loading(self):
         train = self.fileset.load_train_data()

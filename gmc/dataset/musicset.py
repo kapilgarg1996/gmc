@@ -7,9 +7,10 @@ import pickle
 import shutil
 import numpy as np
 import importlib
+from matplotlib import pyplot as plt
 from gmc.conf import settings
 from gmc.core.cache import store
-from gmc.dataset import features
+from gmc.dataset import features, reduce
 
 RESULT_DIR = 'musicset'
 
@@ -118,6 +119,31 @@ class MusicSet:
 
         self.storage['test.dat'] = self.test
         return self.test
+
+    def visualize(self, mode='pca'):
+        self.one_hot_encode_genres()
+        train = self.load_train_data()
+        if mode=='pca':
+            reduced = reduce.pca(train.music)
+        else:
+            reduced = reduce.lda(train.music, train.labels)
+        x = reduced[:, 0]
+        y = reduced[:, 1]
+        colors = []
+        genres_labels = [None]*len(self.genres)
+        for genre in self.genres:
+            idx = np.where(self.encoded_genres[genre]==1)[0][0]
+            genres_labels[idx]= genre
+        for label in train.labels:
+            colors.append(np.where(label==1)[0][0])
+
+        std_x = np.std(x)
+        std_y = np.std(y)
+        plt.scatter(np.divide(x, std_x), np.divide(y, std_y), c=colors, cmap=plt.cm.get_cmap("jet", len(self.genres)))
+        cbr = plt.colorbar(ticks=range(len(self.genres)), label='Genres')
+        cbr.set_ticklabels(genres_labels)
+        plt.clim(-0.5, 9.5)
+        plt.show()
 
     def destroy_results(self):
         shutil.rmtree(self.results_dir)
