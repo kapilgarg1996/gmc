@@ -7,6 +7,10 @@ GENRES = [
     'jazz', 'metal', 'pop', 'reggae', 'rock'
 ]
 
+NUM_BEATS = 10
+
+KEEP_FRAMES = 0
+
 TRAIN_TEST_RATIO = [7, 3]
 
 MODE = 'nn'
@@ -14,10 +18,15 @@ MODE = 'nn'
 PCA = False
 
 FEATURES = ['mfcc', 'dwt', 'beat']
+
+MFCC_EXTRA = ['delta', 'ddelta', 'energy']
+
+DWT = ['mean', 'std', 'max', 'min']
+
 FEATURES_LENGTH = {
     'mfcc' : 160,
     'dwt' : 112,
-    'beat' : 13
+    'beat' : 11
 }
 
 FRAME_LENGTH = 0.025
@@ -37,7 +46,10 @@ NN = {
 
 CNN = {
     'NUM_HIDDEN_LAYERS' : 2,
+    'NUM_DENSE_LAYERS' : 1,
     'HIDDEN_FEATURES' : [32, 64],
+    'DENSE_INPUTS' : [128],
+    'INPUT_SHAPE' : [16, 17],
     'PATCH_SIZE' : [5, 5],
     'RANDOM' : False,
     'STRIDES' : [1, 1, 1, 1],
