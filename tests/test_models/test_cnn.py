@@ -1,7 +1,7 @@
 import unittest
 import os
 import numpy as np
-from gmc.core.models import nn
+from gmc.core.models import cnn
 from gmc.dataset import musicset, reduce
 
 @unittest.skipIf(os.environ.get("DUMMY") == "TRUE",
@@ -12,5 +12,5 @@ class TestNN(unittest.TestCase):
         dataset.load_files()
         dataset.load_train_data()
         dataset.load_test_data()
-        nn_t = nn.NN(dataset)
-        nn_t.train(display_step=100)
+        cnn_t = cnn.CNN(dataset)
+        cnn_t.train(display_step=100)

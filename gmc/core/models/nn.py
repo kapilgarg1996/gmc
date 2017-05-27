@@ -3,20 +3,24 @@ import os
 from gmc.conf import settings
 
 class NN:
-    def __init__(self, dataset):
+    def __init__(self, dataset, n_input=None):
         self.data = dataset
         self.layers = []
         self.weights = []
         self.bias = []
         self.results_dir = os.path.join(settings.BRAIN_DIR, "nn")
+        if n_input is None:
+            n_input = 0
+            for f in settings.FEATURES:
+                n_input += settings.FEATURES_LENGTH[f]
+
+        self.n_input = n_input
         if not os.path.isdir(self.results_dir):
             os.mkdir(self.results_dir)
 
     def train(self, display_step=100):
         n_classes = len(settings.GENRES)
-        n_input = 0
-        for f in settings.FEATURES:
-            n_input += settings.FEATURES_LENGTH[f]
+        n_input = self.n_input
         x = self.x = tf.placeholder("float", [None, n_input])
         y = self.y = tf.placeholder("float", [None, n_classes])
         keep_prob = self.keep_prob = tf.placeholder(tf.float32)
