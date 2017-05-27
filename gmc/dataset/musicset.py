@@ -7,6 +7,7 @@ import pickle
 import shutil
 import numpy as np
 import importlib
+import random
 from matplotlib import pyplot as plt
 from gmc.conf import settings
 from gmc.core.cache import store
@@ -23,7 +24,9 @@ class DataSet:
         if self.music is None:
             return None, None
 
-        idx = np.random.randint(self.music.shape[0], size=n)
+        idx = np.arange(self.music.shape[0])
+        np.random.shuffle(idx)
+        idx = idx[:n]
         return self.music[idx, :], self.labels[idx, :]
 
 class MusicSet:
@@ -37,6 +40,7 @@ class MusicSet:
         self.train = None
         self.test = None
         self.encoded_genres = None
+        self.load_files()
 
     def load_files(self):
         self.files = self.storage['loaded_files.dat']
@@ -150,7 +154,6 @@ class MusicSet:
         plt.scatter(np.divide(x, std_x), np.divide(y, std_y), c=colors, cmap=plt.cm.get_cmap("jet", len(self.genres)))
         cbr = plt.colorbar(ticks=range(len(self.genres)), label='Genres')
         cbr.set_ticklabels(genres_labels)
-        plt.clim(-0.5, 9.5)
         plt.show()
 
     def destroy_results(self):
