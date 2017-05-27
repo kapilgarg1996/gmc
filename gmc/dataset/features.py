@@ -23,14 +23,22 @@ def mfcc(filename, **kwargs):
     kwargs.setdefault('n_mels', 128)
     kwargs.setdefault('n_mfcc', settings.N_MFCC)
     mfcc = librosa.feature.mfcc(y=y, sr=sr, **kwargs)
-    deltas = librosa.feature.delta(mfcc)
-    d_deltas = librosa.feature.delta(mfcc, order=2)
-    
-    y_ = np.pad(y, int(kwargs['n_fft']//2), mode='reflect')
-    energies = librosa.feature.rmse(y=y_, frame_length=int(kwargs['n_fft']), 
-        hop_length=int(kwargs['hop_length']))
+    all_features = np.array(mfcc)
+    if 'delta' in settings.MFCC_EXTRA:
+        deltas = librosa.feature.delta(mfcc)
+        all_features = np.vstack((all_features, deltas,))
+    if 'ddelta' in settings.MFCC_EXTRA:
+        d_deltas = librosa.feature.delta(mfcc, order=2)
+        all_features = np.vstack((all_features, d_deltas,))
+    if 'energy' in settings.MFCC_EXTRA:
+        y_ = np.pad(y, int(kwargs['n_fft']//2), mode='reflect')
+        energies = librosa.feature.rmse(y=y_, frame_length=int(kwargs['n_fft']), 
+            hop_length=int(kwargs['hop_length']))
+        all_features = np.vstack((all_features, energies,))
 
-    all_features = np.vstack((mfcc, deltas, d_deltas, energies,))
+    if settings.KEEP_FRAMES > 0:
+        all_features = all_features.T
+        return np.ravel(all_features[:settings.KEEP_FRAMES, :])
     
     mean_features = np.mean(all_features, axis=-1)
     std_features = np.std(all_features, axis=-1)
@@ -70,6 +78,9 @@ def dwt(filename, **kwargs):
             wavelets = np.array(final_features)
         else:
             wavelets = np.vstack((wavelets, final_features,))
+
+    if settings.KEEP_FRAMES > 0:
+        return np.ravel(wavelets[:settings.KEEP_FRAMES, :])
 
     all_features = wavelets.T
     mean_features = np.mean(all_features, axis=-1)
@@ -123,6 +134,6 @@ def beat(filename, **kwargs):
     #             sess.run(optimizer, feed_dict={X: x, Y: y})
 
     # features = np.array([t, W, b])
-    first_frames = beats[:10]
+    first_frames = beats[:settings.NUM_BEATS]
 
     return np.hstack((t, first_frames,))
