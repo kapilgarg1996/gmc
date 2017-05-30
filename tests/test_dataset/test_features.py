@@ -1,5 +1,9 @@
 import unittest
 import os
+import librosa
+import numpy as np
+from librosa import display
+import matplotlib.pyplot as plt
 from gmc.conf import settings
 from gmc.test import TestCase
 from gmc.dataset import musicset, features
@@ -39,3 +43,16 @@ class TestRealFeatures(unittest.TestCase):
         self.assertEqual(test.music.shape[1], self.total_features)
         self.assertEqual(test.labels.shape[0], 300)
         self.assertEqual(test.labels.shape[1], 10)
+
+class TestPlots(unittest.TestCase):
+    def test_mfcc_plot(self):
+        plt.figure(figsize=(10, 4))
+        module_path = os.path.dirname(os.path.abspath(__file__))
+        test_file = os.path.join(module_path, 'blues.00099.au.wav')
+        y, sr = librosa.load(test_file)
+        S = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
+        display.specshow(librosa.power_to_db(S, ref=np.max), y_axis='mel', 
+            fmax=8000, x_axis='time')
+        plt.colorbar(format='%+2.0f dB')
+        plt.title('Mel spectrogram')
+        plt.show()

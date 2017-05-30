@@ -22,5 +22,5 @@ class TestPCA(unittest.TestCase):
         print(new_features.shape)
 
     def test_visual_data(self):
-        featureset = musicset.MusicSet(dirname='features2')
+        featureset = musicset.MusicSet(dirname='features_md_6')
         featureset.visualize()
