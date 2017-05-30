@@ -19,6 +19,24 @@ def pca(x, k=None):
 
     return Z.T
 
+def pca_comp(x, k=None):
+    x_mean = np.mean(x, axis=0)
+    x = np.subtract(x, x_mean)
+    sigma = np.matmul(x.T, x)
+    sigma = np.divide(sigma, x.shape[0])
+    U, S, V = np.linalg.svd(sigma)
+    S_cum = np.cumsum(S)
+    S_ = np.divide(S_cum, S_cum[-1])
+    if k is None:
+        k=1
+        for s in S_:
+            if s > 0.99:
+                break
+            k += 1
+    U_ = U[:, :k]
+    
+    return U_
+
 def lda(x, y):
     c = []
     for label in y:
