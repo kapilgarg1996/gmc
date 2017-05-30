@@ -17,7 +17,8 @@ def mfcc(filename, **kwargs):
 
     Returns complete feature vector (160 features)
     """
-    y, sr = librosa.load(filename)
+    dur = kwargs.get('duration', None)
+    y, sr = librosa.load(filename, duration=dur)
     kwargs.setdefault('n_fft', int(sr*settings.FRAME_LENGTH))
     kwargs.setdefault('hop_length', int(sr*settings.HOP_LENGTH))
     kwargs.setdefault('n_mels', 128)
@@ -55,7 +56,8 @@ def dwt(filename, **kwargs):
     Compute wavelet coefficients frame wise and return computed features
     (112 features)
     """
-    y, sr = librosa.load(filename)
+    dur = kwargs.get('duration', None)
+    y, sr = librosa.load(filename, duration=dur)
     options = {}
     options['frame_length'] = int(sr*settings.FRAME_LENGTH*settings.W_FRAME_SCALE)
     options['hop_length'] = int(sr*settings.HOP_LENGTH*settings.W_FRAME_SCALE)
@@ -99,7 +101,8 @@ def beat(filename, **kwargs):
     Use a simple linear regressor to find W and b for beat locations
     Return a feature vector (11 features)
     """
-    y, sr = librosa.load(filename)
+    dur = kwargs.get('duration', None)
+    y, sr = librosa.load(filename, duration=dur)
     kwargs.setdefault('hop_length', 512)
     t, beats = librosa.beat.beat_track(y=y, sr=sr, hop_length=int(kwargs['hop_length']))
 
