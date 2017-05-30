@@ -39,6 +39,7 @@ class MusicSet:
         self.files = {}
         self.train = None
         self.test = None
+        self.validation = None
         self.encoded_genres = None
         self.load_files()
 
@@ -132,6 +133,27 @@ class MusicSet:
         self.storage['test.dat'] = self.test
         return self.test
 
+    def load_validation_data(self, v_ratio=0.2):
+        self.load_train_data()
+        self.validation = DataSet()
+        n_tr = self.train.music.shape[0]
+        temp = None
+        temp_l = None
+        for x in range(0, n_tr, 100):
+            if temp is None:
+                temp = self.train.music[x:x+100]
+                temp_l = self.train.labels[x:x+100]
+            else:
+                temp = np.hstack((temp, self.train.music[x:x+100]))
+                temp_l = np.hstack((temp_l, self.train.labels[x:x+100]))
+
+        self.validation.music = temp[80:, :].reshape((140, 272))
+        self.validation.labels = temp_l[80:, :].reshape((140, 10))
+
+        self.train.music = temp[:80, :].reshape((560, 272))
+        self.train.labels = temp_l[:80, :].reshape((560, 10))
+        return self.validation
+
     def visualize(self, mode='pca'):
         self.one_hot_encode_genres()
         train = self.load_train_data()
@@ -154,6 +176,10 @@ class MusicSet:
         plt.scatter(np.divide(x, std_x), np.divide(y, std_y), c=colors, cmap=plt.cm.get_cmap("jet", len(self.genres)))
         cbr = plt.colorbar(ticks=range(len(self.genres)), label='Genres')
         cbr.set_ticklabels(genres_labels)
+        if mode=='pca':
+            plt.title('PCA projections')
+        else:
+            plt.title('LDA projection')
         plt.show()
 
     def destroy_results(self):
