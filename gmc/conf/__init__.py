@@ -32,12 +32,14 @@ class Settings:
         for setting in dir(global_settings):
             if setting.isupper():
                 self.settings[setting] = getattr(global_settings, setting)
-        self.settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
-        mod = importlib.import_module(self.settings_module)
+        self.settings_module = os.environ.get(ENVIRONMENT_VARIABLE, None)
+        
+        if self.settings_module is not None:
+            mod = importlib.import_module(self.settings_module)
 
-        for setting in dir(mod):
-            if setting.isupper():
-                self.settings[setting] = getattr(mod, setting)
+            for setting in dir(mod):
+                if setting.isupper():
+                    self.settings[setting] = getattr(mod, setting)
 
     def modify(self, new_settings):
         for name in new_settings:
