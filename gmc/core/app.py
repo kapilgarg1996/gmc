@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from tkinter.filedialog import askopenfilename
 from gmc.dataset.utils import mel_spec_plot as msp
 from gmc.core.models import nn
-from gmc.dataset import features
+from gmc.dataset import features, musicset
 from gmc.core.cache import store
 from gmc.conf import settings
 from gmc.core import handler
@@ -28,12 +28,15 @@ class GmcApp:
         self.canvas = tk.Label(root, image=self.img)
         self.canvas.image = self.img
         self.canvas.grid(row=0, column=0)
+        self.prediction = None
         root.wm_title("Music Classifier")
         tk.Button(root, text = "Select File", command = lambda: self.openFile()).grid(row=1, column=0, pady=5)
         tk.Button(root, text = "Record Audio", command = lambda: self.record()).grid(row=1, column=1, pady=5)
         tk.Button(root, text = "Classify", command = lambda: self.classify()).grid(row=1, column=2, pady=5)
 
     def plot (self, filepath):
+        if self.prediction is not None:
+            self.prediction.destroy()
         if self.canvas is not None:
             self.canvas.destroy()
         fig = msp(filepath)
@@ -54,14 +57,27 @@ class GmcApp:
         data = self.get_features()
         n_f = data.shape[0]
         data = data.reshape((1, n_f))
+        prediction = None
         with tf.Session() as sess:
             saver.restore(sess, save_path)
             graph = tf.get_default_graph()
             x = graph.get_tensor_by_name('x:0')
             y_ = graph.get_tensor_by_name('y_:0')
             keep_prob = graph.get_tensor_by_name('keep_prob:0')
-            result = sess.run(y_, feed_dict={x : data, keep_prob:1})
-            print(result)
+            result = sess.run(y_, feed_dict={x : data, keep_prob:1})[0]
+            idx = np.argmax(result)
+            dataset = musicset.MusicSet()
+            dataset.one_hot_encode_genres()
+            for genre in dataset.genres:
+                if dataset.encoded_genres[genre][idx] == 1:
+                    prediction = genre
+
+        if self.prediction is not None:
+            self.prediction.destroy()
+
+        self.prediction = tk.Label(self.root, text=prediction)
+        self.prediction.config(font=("Courier", 36))
+        self.prediction.grid(row=0, column=1)
 
     def get_features(self):
         result = None
