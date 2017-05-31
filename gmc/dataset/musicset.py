@@ -80,6 +80,7 @@ class MusicSet:
             self.one_hot_encode_genres()
         tr_ratio = int(settings.TRAIN_TEST_RATIO[0])/np.sum(settings.TRAIN_TEST_RATIO)
         for genre in self.genres:
+            print("Feautures for %s Extracting" % genre)
             num_total_files = len(self.files[genre])
             num_train_files = int(num_total_files*tr_ratio)
             train_files = self.files[genre][:num_train_files]
@@ -87,16 +88,20 @@ class MusicSet:
                 result = None
                 for f in settings.FEATURES:
                     feat_func = getattr(features, f)
+                    out = feat_func(file)
                     if result is None:
-                        result = feat_func(file)
+                        result = out
                     else:
-                        result = np.append(result, feat_func(file))
+                        result = np.append(result, out, axis=-1)
                 if self.train.music is None:
                     self.train.music = result
-                    self.train.labels = np.array(self.encoded_genres[genre])
+                    n_samp = result.shape[0]
+                    self.train.labels = np.tile(np.array(self.encoded_genres[genre]), (n_samp, 1))
                 else:
                     self.train.music = np.vstack((self.train.music, result,))
-                    self.train.labels = np.vstack((self.train.labels, self.encoded_genres[genre]))
+                    n_samp = result.shape[0]
+                    labels = np.tile(np.array(self.encoded_genres[genre]), (n_samp, 1))
+                    self.train.labels = np.vstack((self.train.labels, labels))
 
         self.storage['train.dat'] = self.train
         return self.train
@@ -119,16 +124,20 @@ class MusicSet:
                 result = None
                 for f in settings.FEATURES:
                     feat_func = getattr(features, f)
+                    out = feat_func(file)
                     if result is None:
-                        result = feat_func(file)
+                        result = out
                     else:
-                        result = np.append(result, feat_func(file))
+                        result = np.append(result, out, axis=-1)
                 if self.test.music is None:
                     self.test.music = result
-                    self.test.labels = np.array(self.encoded_genres[genre])
+                    n_samp = result.shape[0]
+                    self.test.labels = np.tile(np.array(self.encoded_genres[genre]), (n_samp, 1))
                 else:
                     self.test.music = np.vstack((self.test.music, result,))
-                    self.test.labels = np.vstack((self.test.labels, self.encoded_genres[genre]))
+                    n_samp = result.shape[0]
+                    labels = np.tile(np.array(self.encoded_genres[genre]), (n_samp, 1))
+                    self.test.labels = np.vstack((self.test.labels, labels))
 
         self.storage['test.dat'] = self.test
         return self.test

@@ -37,19 +37,32 @@ def mfcc(filename, **kwargs):
             hop_length=int(kwargs['hop_length']))
         all_features = np.vstack((all_features, energies,))
 
+    final_features = None
+
     if settings.KEEP_FRAMES > 0:
-        all_features = all_features.T
-        return np.ravel(all_features[:settings.KEEP_FRAMES, :])
-    
-    mean_features = np.mean(all_features, axis=-1)
-    std_features = np.std(all_features, axis=-1)
-    max_features = np.amax(all_features, axis=-1)
-    min_features = np.amin(all_features, axis=-1)
-
-    final_features = np.vstack((mean_features, std_features, 
-        max_features, min_features,))
-
-    return np.ravel(final_features)
+        num_batch = int(all_features.shape[1]/settings.KEEP_FRAMES)
+        for i in range(num_batch):
+            batch = all_features[:, i*settings.KEEP_FRAMES:(i+1)*settings.KEEP_FRAMES]
+            mean_features = np.mean(batch, axis=-1)
+            std_features = np.std(batch, axis=-1)
+            max_features = np.amax(batch, axis=-1)
+            min_features = np.amin(batch, axis=-1)
+            total_features = np.vstack((mean_features, std_features, 
+                max_features, min_features,))
+            if final_features is None:
+                final_features = np.ravel(total_features)
+            else:
+                final_features = np.vstack((final_features, np.ravel(total_features)))
+    else:
+        batch = all_features
+        mean_features = np.mean(batch, axis=-1)
+        std_features = np.std(batch, axis=-1)
+        max_features = np.amax(batch, axis=-1)
+        min_features = np.amin(batch, axis=-1)
+        total_features = np.vstack((mean_features, std_features, 
+            max_features, min_features,))
+        final_features = np.ravel(total_features)
+    return final_features
 
 def dwt(filename, **kwargs):
     """
@@ -81,19 +94,33 @@ def dwt(filename, **kwargs):
         else:
             wavelets = np.vstack((wavelets, final_features,))
 
-    if settings.KEEP_FRAMES > 0:
-        return np.ravel(wavelets[:settings.KEEP_FRAMES, :])
-
     all_features = wavelets.T
-    mean_features = np.mean(all_features, axis=-1)
-    std_features = np.std(all_features, axis=-1)
-    max_features = np.amax(all_features, axis=-1)
-    min_features = np.amin(all_features, axis=-1)
+    final_features = None
 
-    final_features = np.vstack((mean_features, std_features, 
-        max_features, min_features,))
-
-    return np.ravel(final_features)
+    if settings.KEEP_FRAMES > 0:
+        num_batch = int(all_features.shape[1]/settings.KEEP_FRAMES)
+        for i in range(num_batch):
+            batch = all_features[:, i*settings.KEEP_FRAMES:(i+1)*settings.KEEP_FRAMES]
+            mean_features = np.mean(batch, axis=-1)
+            std_features = np.std(batch, axis=-1)
+            max_features = np.amax(batch, axis=-1)
+            min_features = np.amin(batch, axis=-1)
+            total_features = np.vstack((mean_features, std_features, 
+                max_features, min_features,))
+            if final_features is None:
+                final_features = np.ravel(total_features)
+            else:
+                final_features = np.vstack((final_features, np.ravel(total_features)))
+    else:
+        batch = all_features
+        mean_features = np.mean(batch, axis=-1)
+        std_features = np.std(batch, axis=-1)
+        max_features = np.amax(batch, axis=-1)
+        min_features = np.amin(batch, axis=-1)
+        total_features = np.vstack((mean_features, std_features, 
+            max_features, min_features,))
+        final_features = np.ravel(total_features)
+    return final_features
 
 def beat(filename, **kwargs):
     """
